@@ -117,5 +117,5 @@ See: http://codex.wordpress.org/Function_Reference/get_the_terms
 
 * Add taxonomy images support to ```get_term``` and ```get_the_terms```
 * Do something about inconsistent array of term objects between ```get_terms```'s array of objects by index vs ```get_the_term```'s array of objects with term_id as keys?
-
+* Additional error handling so ```get_terms```, ```get_term``` and ```get_the_terms``` don't have their error in the JSON term array.
 
