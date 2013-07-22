@@ -24,6 +24,7 @@ class JSON_API_Terms_Controller {
         $return_images = $json_api->query->return_images == 'true' ? true : false;
         $having_images = $json_api->query->having_images == 'true' ? true : false;
         $cache_images  = $json_api->query->cache_images  == 'true' ? true : false;
+        $image_size    = $json_api->query->image_size;
         
         // Make sure a taxonomy is supplied otherwise we can't fetch any terms
         if ( !$taxonomy ) {
@@ -39,6 +40,12 @@ class JSON_API_Terms_Controller {
             // Check if the taxonomy-images plugin is installed and active
             if ( !is_plugin_active('taxonomy-images/taxonomy-images.php') ) {
                 $json_api->error("return_images requires the taxonomy images plugin available from: http://wordpress.org/plugins/taxonomy-images/");
+                return null;
+            }
+            
+            // Image size is required if we are to return image urls instead of ids
+            if ( !$image_size ) {
+                $json_api->error("return_images requires image_size to define a thumbnail size.");
                 return null;
             }
             
@@ -79,6 +86,17 @@ class JSON_API_Terms_Controller {
                     'term_args'     => $term_args
                 ) 
             );
+            
+            // Fetch the src and other details for images 
+            $index = 0;
+            foreach($terms as $term) {
+                $image = wp_get_attachment_image_src( $term->image_id, $image_size );
+                $terms[ $index ]->image_url     = $image[0];
+                $terms[ $index ]->image_width   = $image[1];
+                $terms[ $index ]->image_height  = $image[2];
+                $terms[ $index ]->image_resized = $image[3];
+                $index++;
+            }
             
         }
         else {
