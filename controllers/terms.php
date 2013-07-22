@@ -1,7 +1,7 @@
 <?php
 /*
 Controller name: Terms
-Controller description: Interface to get_terms (with optional taxonomy images plugin)
+Controller description: Interface to get_terms (with optional taxonomy images)
 */
 
 class JSON_API_Terms_Controller {
@@ -86,15 +86,73 @@ class JSON_API_Terms_Controller {
         }
         
         if ($terms) {
-            return $terms;
+            return array(
+                'count' => count($terms),
+                'terms' => $terms
+            );
         }
         else {
             $json_api->error("No terms matching your request were found.");
             return null;
         }
-        
     }
-
+    
+    public function get_term() {
+        global $json_api;
+        
+        // See:
+        // http://codex.wordpress.org/Function_Reference/get_term
+        // TODO: Should probably add support for taxonomy images
+        
+        $term_id  = $json_api->query->term_id;    // The term's id
+        $taxonomy = $json_api->query->taxonomy;   // The taxonomy
+        
+        // term_id and taxonomy are required
+        if ( !$term_id || !$taxonomy ) {
+            $json_api->error("The term_id and taxonomy are required to retrieve the term details.");
+            return null;
+        }
+        
+        $term = get_term($term_id, $taxonomy);
+        
+        if ($term) {
+            return array('term' => $term);
+        }
+        else {
+            $json_api->error("No term matching your request was found.");
+            return null;
+        }  
+    }
+    
+    public function get_the_terms() {
+        global $json_api;
+        
+        // See:
+        // http://codex.wordpress.org/Function_Reference/get_the_terms
+        // TODO: Should probably add support for taxonomy images
+        
+        $post_id  = $json_api->query->post_id;    // The post's id to retrieve the attached terms from
+        $taxonomy = $json_api->query->taxonomy;   // The taxonomy
+        
+        // term_id and taxonomy are required
+        if ( !$post_id || !$taxonomy ) {
+            $json_api->error("The post_id and taxonomy are required to retrieve the term details.");
+            return null;
+        }
+        
+        $terms = get_the_terms($post_id, $taxonomy);
+        
+        if ($terms) {
+            return array(
+                'count' => count($terms),
+                'terms' => $terms
+            );
+        }
+        else {
+            $json_api->error("No terms matching the post was found.");
+            return null;
+        }  
+    }
 }
 
 ?>
