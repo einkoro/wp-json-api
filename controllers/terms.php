@@ -1,7 +1,7 @@
 <?php
 /*
 Controller name: Terms
-Controller description: Interface to get_terms (with optional taxonomy images)
+Controller description: Interface to get_terms (with optional taxonomy images plugin)
 */
 
 class JSON_API_Terms_Controller {
@@ -27,8 +27,8 @@ class JSON_API_Terms_Controller {
         
         // Make sure a taxonomy is supplied otherwise we can't fetch any terms
         if ( !$taxonomy ) {
-    		$json_api->error("taxonomy is required to retrieve the terms from.");
-    		return null;
+            $json_api->error("taxonomy is required to retrieve the terms from.");
+            return null;
         }
         
         // Do we need to return images? This will require the taxonomy images plugin!        
@@ -38,8 +38,8 @@ class JSON_API_Terms_Controller {
             
             // Check if the taxonomy-images plugin is installed and active
             if ( !is_plugin_active('taxonomy-images/taxonomy-images.php') ) {
-        		$json_api->error("return_images requires the taxonomy images plugin available from: http://wordpress.org/plugins/taxonomy-images/");
-        		return null;
+                $json_api->error("return_images requires the taxonomy images plugin available from: http://wordpress.org/plugins/taxonomy-images/");
+                return null;
             }
             
         }
@@ -55,8 +55,8 @@ class JSON_API_Terms_Controller {
         }
         
         if ( array_key_exists('offset', $term_args) && $term_args['offset'] > $term_max_offset ) {
-    		$json_api->error("term_args[offset] cannot exceed the total number of terms for the taxonomy.");
-    		return null;
+            $json_api->error("term_args[offset] cannot exceed the total number of terms for the taxonomy.");
+            return null;
         }
 
         // If we want random terms we need to pick a random offset... order by id seems as good as anything for our needs.
@@ -85,13 +85,13 @@ class JSON_API_Terms_Controller {
             $terms = get_terms($taxonomy, $term_args);            
         }
         
-    	if ($terms) {
+        if ($terms) {
             return $terms;
-    	}
+        }
         else {
-    		$json_api->error("No terms matching your request were found.");
-    		return null;
-    	}
+            $json_api->error("No terms matching your request were found.");
+            return null;
+        }
         
     }
 
